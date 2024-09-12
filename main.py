@@ -26,6 +26,7 @@ class MainApp(QMainWindow, FORM_CLASS):
         self.Fixed_UI()
         self.Handle_Buttons()
 
+
     def Fixed_UI(self):
         self.setWindowTitle("The Downloader")
         self.setFixedSize(900, 720)
@@ -56,6 +57,9 @@ class MainApp(QMainWindow, FORM_CLASS):
         self.FileType.setText(f" {mime_type}")
         self.FileSize.setText(f" {File_size}")
         self.SaveLocation.setText(f" {self.extract_filename_from_url(url)}")
+
+
+
 
     def extract_filename_from_url(self, url):  # Added 'self' here
         parsed_url = urlparse(url)
