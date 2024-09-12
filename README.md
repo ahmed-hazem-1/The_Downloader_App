@@ -101,8 +101,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or further assistance, feel free to reach out:
 
-- **Email**: your.ahmed453189@fci.bu.edu.eg
-- **GitHub**: [Ahmed Hazem](https://github.com/ahmed-hazem-1))
+- **Email**: ahmed453189@fci.bu.edu.eg
+- **GitHub**: [Ahmed Hazem](https://github.com/ahmed-hazem-1)
 
 ---
 
