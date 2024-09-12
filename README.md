@@ -1,6 +1,4 @@
-Here’s an updated version of the README file with added stylistic elements to make it visually appealing and easier to read:
 
----
 
 # 🛠️ The Downloader Manager
 
@@ -104,6 +102,4 @@ For questions or further assistance, feel free to reach out:
 - **Email**: ahmed453189@fci.bu.edu.eg
 - **GitHub**: [Ahmed Hazem](https://github.com/ahmed-hazem-1)
 
----
 
-This version of the README uses emojis, headers, and a clear structure to make it more engaging and readable. Adjust the content and links according to your project’s details!
