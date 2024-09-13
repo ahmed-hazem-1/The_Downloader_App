@@ -5,7 +5,7 @@ import sys
 from urllib.parse import urlparse
 
 from PyQt5.uic import loadUiType
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QThread
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 from pip._internal.utils.filesystem import file_size
 
@@ -16,6 +16,21 @@ from downloading_page import DownloadingPage
 
 FORM_CLASS, _ = loadUiType(os.path.join(os.path.dirname(__file__), "main.ui"))
 
+class DownloadThread(QThread):
+    def __init__(self, url, file_path, progress):
+        super().__init__()
+        self.url = url
+        self.file_path = file_path
+        self.progress = progress
+
+    def run(self):
+        DownloadFile.download_file(self.url, self.file_path, self.progress)
+
+def extract_filename_from_url(url):  # Added 'self' here
+    parsed_url = urlparse(url)
+    filename = os.path.basename(parsed_url.path)
+    return filename
+
 
 class MainApp(QMainWindow, FORM_CLASS):
     def __init__(self, parent=None):
@@ -25,7 +40,6 @@ class MainApp(QMainWindow, FORM_CLASS):
         self.setupUi(self)
         self.Fixed_UI()
         self.Handle_Buttons()
-
 
     def Fixed_UI(self):
         self.setWindowTitle("The Downloader")
@@ -42,6 +56,7 @@ class MainApp(QMainWindow, FORM_CLASS):
         self.BrowseButton.clicked.connect(self.Browse_Button_File)
         self.DownloadButton.clicked.connect(self.Download_File)
         self.lineEdit.textChanged.connect(self.update_file_info)
+        self.pushButton_2.clicked.connect(self.close)
 
     def update_file_info(self):
         url = self.lineEdit.text()
@@ -56,15 +71,7 @@ class MainApp(QMainWindow, FORM_CLASS):
         # Update the UI with the file info
         self.FileType.setText(f" {mime_type}")
         self.FileSize.setText(f" {File_size}")
-        self.SaveLocation.setText(f" {self.extract_filename_from_url(url)}")
-
-
-
-
-    def extract_filename_from_url(self, url):  # Added 'self' here
-        parsed_url = urlparse(url)
-        filename = os.path.basename(parsed_url.path)
-        return filename
+        self.SaveLocation.setText(f" {extract_filename_from_url(url)}")
 
     def Download_File(self):
         url = self.lineEdit.text()
@@ -72,16 +79,21 @@ class MainApp(QMainWindow, FORM_CLASS):
             self.show_error_message("Please enter a valid URL.")
             return
         else:
-
             file_path = self.full_save_path
             downloading_page_2 = DownloadingPage(self)
+            downloading_page_2.set_file_info(extract_filename_from_url(url), self.FileSize.text(), self.FileType.text())
             downloading_page_2.show()
-            success = DownloadFile.download_file(url, file_path, downloading_page_2.progress)  # Corrected here
-            if success:
-                QMessageBox.information(self, "Download Complete", "The file has been downloaded successfully.")
-            else:
-                QMessageBox.critical(self, "Download Failed", "The file could not be downloaded.")
 
+            # Create and start the download thread
+            self.download_thread = DownloadThread(url, file_path, downloading_page_2.progress)
+            self.download_thread.finished.connect(self.on_download_finished)  # Connect the finished signal to a slot
+            self.download_thread.start()
+
+    def on_download_finished(self):
+        if self.download_thread.isFinished():
+            QMessageBox.information(self, "Download Complete", "The file has been downloaded successfully.")
+        else:
+            QMessageBox.critical(self, "Download Failed", "The file could not be downloaded.")
 
 def main():
     app = QApplication(sys.argv)
