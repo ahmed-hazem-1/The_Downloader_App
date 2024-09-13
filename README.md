@@ -1,6 +1,6 @@
 
 
-# 🛠️ The Downloader Manager
+# 🛠️ The Downloader APP
 
 **The Downloader Manager** is a PyQt-based desktop application designed to simplify the process of downloading files from the internet. With a clean and intuitive interface, users can effortlessly retrieve detailed file information before initiating a download. The app is also being extended to support YouTube video and playlist downloads.
 
