@@ -36,3 +36,7 @@ class DownloadingPage(QDialog, DownloadingPage_UI):
         else:
             self.ProgressBar.setValue(0)
             self.file_size_label.setText("0 MB")
+
+    def set_percentage(self, percentage):
+        self.ProgressBar.setValue(percentage)
+        print(f"percentage: {percentage}")

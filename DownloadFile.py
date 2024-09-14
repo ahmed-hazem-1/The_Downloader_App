@@ -60,32 +60,7 @@ def get_info(url):
         print(f"Error getting file info: {e}")
         return "Unknown", "Unknown"
 
-# def download_file(url, file_path, progress, max_retries=3, block_size=1024 * 1024):  # 1 Mebibyte
-#     try:
-#         file_size = 0
-#         if os.path.exists(file_path):
-#             file_size = os.path.getsize(file_path)
-#
-#         headers = {}
-#         if file_size > 0:
-#             headers['Range'] = f'bytes={file_size}-'
-#
-#         # Ignore SSL certificate verification for HTTPS URLs
-#         response = requests.get(url, headers=headers, stream=True, verify=False)
-#         total_size = int(response.headers.get('Content-Length', 0)) + file_size
-#
-#         mode = 'ab' if file_size > 0 else 'wb'
-#         with open(file_path, mode) as file:
-#             for chunk in response.iter_content(block_size):
-#                 file.write(chunk)
-#                 file_size += len(chunk)
-#                 progress(file_size, total_size)  # Call the progress callback here
-#
-#         return True
-#
-#     except requests.RequestException as e:
-#         print(f"Error initiating download: {e}")
-#         return False
+
 def download_file(url, file_path, progress, max_retries=3):  # Removed block_size from arguments
     try:
         file_size = 0

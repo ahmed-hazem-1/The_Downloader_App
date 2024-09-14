@@ -1,5 +1,5 @@
 # main.py is the main file that contains the main application logic.
-
+from helpers import extract_filename_from_url, DownloadThread
 import os
 import sys
 from urllib.parse import urlparse
@@ -10,26 +10,26 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 from pip._internal.utils.filesystem import file_size
 
 import DownloadFile
+import YP
+import YV
 import downloading_page
-
+from YV import YVideo
+import pafy
 from downloading_page import DownloadingPage
 
 FORM_CLASS, _ = loadUiType(os.path.join(os.path.dirname(__file__), "main.ui"))
 
-class DownloadThread(QThread):
-    def __init__(self, url, file_path, progress):
-        super().__init__()
-        self.url = url
-        self.file_path = file_path
-        self.progress = progress
 
-    def run(self):
-        DownloadFile.download_file(self.url, self.file_path, self.progress)
 
-def extract_filename_from_url(url):  # Added 'self' here
-    parsed_url = urlparse(url)
-    filename = os.path.basename(parsed_url.path)
-    return filename
+
+
+
+def is_playlist(url):
+    try:
+        playlist = pafy.get_playlist(url)
+        return True  # If no error, then it's a playlist
+    except ValueError:
+        return False  # If there's a ValueError, it's not a playlist
 
 
 class MainApp(QMainWindow, FORM_CLASS):
@@ -64,14 +64,29 @@ class MainApp(QMainWindow, FORM_CLASS):
             self.FileSize.setText("Size: Unknown")
             self.MimeType.setText("Type: Unknown")
             return
+        if "youtube.com" in url or "youtu.be" in url:
+            if is_playlist(url):
+                self.hide()
+                self.youtube_playlist = YP.YPlaylist()
+                self.youtube_playlist.show()
+                self.youtube_playlist.lineEdit3.setText(url)
 
-        # Fetch file info
-        mime_type, File_size = DownloadFile.get_info(url)
+            else:
+                self.hide()
+                self.youtube_video = YVideo()
+                self.youtube_video.show()
+                self.youtube_video.lineEdit2.setText(url)
+                QTimer.singleShot(100, lambda: self.youtube_video.get_video_info(url))  # Delay the call to get_video_info
 
-        # Update the UI with the file info
-        self.FileType.setText(f" {mime_type}")
-        self.FileSize.setText(f" {File_size}")
-        self.SaveLocation.setText(f" {extract_filename_from_url(url)}")
+
+        else:
+            # Fetch file info
+            mime_type, File_size = DownloadFile.get_info(url)
+
+            # Update the UI with the file info
+            self.FileType.setText(f" {mime_type}")
+            self.FileSize.setText(f" {File_size}")
+            self.SaveLocation.setText(f" {extract_filename_from_url(url)}")
 
     def Download_File(self):
         url = self.lineEdit.text()
@@ -94,6 +109,7 @@ class MainApp(QMainWindow, FORM_CLASS):
             QMessageBox.information(self, "Download Complete", "The file has been downloaded successfully.")
         else:
             QMessageBox.critical(self, "Download Failed", "The file could not be downloaded.")
+
 
 def main():
     app = QApplication(sys.argv)
