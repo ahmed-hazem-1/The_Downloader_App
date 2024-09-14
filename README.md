@@ -30,7 +30,7 @@ pip install PyQt5 requests
 ### Clone the Repository
 
 ```bash
-git clone (https://github.com/ahmed-hazem-1/The_Downloader_App.git)
+git clone https://github.com/ahmed-hazem-1/The_Downloader_App.git
 cd The_Downloader_App
 ```
 
